@@ -3,7 +3,7 @@ import uvicorn
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from src.api.v1 import film
+from src.api.v1 import film, genre, person
 from src.core import config
 from src.db import elastic, redis
 
@@ -43,6 +43,8 @@ async def shutdown():
 
 # Подключаем роутеры к серверу
 app.include_router(film.router, prefix="/api/v1/film", tags=["film"])
+app.include_router(genre.router, prefix="/api/v1/genre", tags=["genre"])
+# app.include_router(person.router, prefix="/api/v1/person", tags=["person"])
 
 
 if __name__ == "__main__":

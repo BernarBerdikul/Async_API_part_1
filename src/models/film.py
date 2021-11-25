@@ -7,7 +7,7 @@ from src.models.person import FilmPerson
 from src.models.genre import FilmGenre
 
 
-class Film(BaseModel):
+class ElasticFilm(BaseModel):
     id: str
     title: str
     description: Optional[str] = None
