@@ -39,7 +39,7 @@ coverage.xml
 .hypothesis/
 
 # dotenv
-.env
+*.env
 
 # virtualenv
 venv/
