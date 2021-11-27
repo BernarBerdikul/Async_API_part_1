@@ -5,9 +5,12 @@ from pydantic import BaseModel
 from src.models.mixin import BaseModelMixin
 from src.models.person import FilmPerson
 from src.models.genre import FilmGenre
+<<<<<<< HEAD
+=======
 
+>>>>>>> etl_gesammelt
 
-class Film(BaseModel):
+class ElasticFilm(BaseModel):
     id: str
     title: str
     description: Optional[str] = None
