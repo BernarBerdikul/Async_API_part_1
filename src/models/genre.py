@@ -17,4 +17,3 @@ class FilmGenre(BaseModelMixin):
 class DetailResponseGenre(FilmGenre):
     """ Schema for Genre detail """
     film_ids: Optional[List[UUID]] = []
-

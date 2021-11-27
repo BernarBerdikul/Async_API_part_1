@@ -6,12 +6,8 @@ from src.core.logger import LOGGING
 
 from dotenv import load_dotenv
 
-<<<<<<< HEAD
-load_dotenv()
-=======
 env_path = Path(__file__).resolve().parent.parent.parent / "envs/fastapi.env"
 load_dotenv(dotenv_path=env_path)
->>>>>>> etl_gesammelt
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)
@@ -31,8 +27,4 @@ ELASTIC_HOST = os.getenv('ELASTIC_HOST', '127.0.0.1')
 ELASTIC_PORT = int(os.getenv('ELASTIC_PORT', 9200))
 
 # Корень проекта
-<<<<<<< HEAD
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-=======
 BASE_DIR = Path(__file__).resolve().parent.parent
->>>>>>> etl_gesammelt

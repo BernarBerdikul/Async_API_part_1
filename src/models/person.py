@@ -18,4 +18,3 @@ class DetailResponsePerson(FilmPerson):
     """ Schema for Person detail """
     role: str
     film_ids: Optional[List[UUID]] = []
-
