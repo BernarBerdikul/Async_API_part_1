@@ -1,4 +1,4 @@
-CINEMA_INDEX_BODY = {
+TEMPLATE_INDEX_BODY: dict = {
   "settings": {
     "refresh_interval": "1s",
     "analysis": {
@@ -35,23 +35,6 @@ CINEMA_INDEX_BODY = {
             "russian_stop",
             "russian_stemmer"
           ]
-        }
-      }
-    }
-  },
-  "mappings": {
-    "dynamic": "strict",
-    "properties": {
-      "id": {
-        "type": "keyword"
-      },
-      "name": {
-        "type": "text",
-        "analyzer": "ru_en",
-        "fields": {
-          "raw": {
-            "type":  "keyword"
-          }
         }
       }
     }
