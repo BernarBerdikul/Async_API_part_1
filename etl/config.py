@@ -1,13 +1,14 @@
 import os
+from pathlib import Path
 import logging
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = Path(__file__).resolve().parent.parent / "envs/etl.env"
+load_dotenv(dotenv_path=env_path)
 
 logging.basicConfig(filename='etl.log', level='INFO')
 logger = logging.getLogger()
 logger.setLevel(level='INFO')
-
 
 dsl = {
     'dbname': os.getenv('DB_NAME'),
