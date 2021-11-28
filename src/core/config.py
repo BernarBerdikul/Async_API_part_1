@@ -26,5 +26,7 @@ REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 ELASTIC_HOST = os.getenv('ELASTIC_HOST', '127.0.0.1')
 ELASTIC_PORT = int(os.getenv('ELASTIC_PORT', 9200))
 
+CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
+
 # Корень проекта
 BASE_DIR = Path(__file__).resolve().parent.parent

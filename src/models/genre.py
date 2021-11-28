@@ -1,6 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel
-from src.models.mixin import BaseModelMixin
+from src.models.mixin import BaseModelMixin, PaginationMixin
 from uuid import UUID
 
 
@@ -16,4 +16,8 @@ class FilmGenre(BaseModelMixin):
 
 class DetailResponseGenre(FilmGenre):
     """ Schema for Genre detail """
-    film_ids: Optional[List[UUID]] = []
+    # film_ids: Optional[List[UUID]] = []
+
+
+class GenrePagination(PaginationMixin):
+    genres: List[FilmGenre] = []
