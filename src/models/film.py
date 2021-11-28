@@ -16,17 +16,7 @@ class Film(BaseModel):
     director: Optional[List[str]] = None
     actors: Optional[List[Dict[str, str]]] = None
     writers: Optional[List[Dict[str, str]]] = None
-
-
-class ElasticFilm(BaseModel):
-    id: str
-    title: str
-    description: Optional[str] = None
-    imdb_rating: Optional[float] = None
-    genre: Optional[List[str]] = None
-    director: Optional[List[str]] = None
-    actors: Optional[List[Dict[str, str]]] = None
-    writers: Optional[List[Dict[str, str]]] = None
+    directors: Optional[List[Dict[str, str]]] = None
 
 
 class ListResponseFilm(BaseModelMixin):

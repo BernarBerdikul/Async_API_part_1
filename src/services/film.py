@@ -1,10 +1,12 @@
 from functools import lru_cache
-from typing import Optional, List, Tuple
+from typing import Optional
 
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 from pydantic import parse_obj_as
+
+from src.api.v1.utils import get_params_films_to_elastic
 
 from src.core.config import CACHE_EXPIRE_IN_SECONDS
 from src.db.elastic import get_elastic
@@ -16,8 +18,8 @@ class FilmService:
     def __init__(self, redis: Redis, elastic: AsyncElasticsearch):
         self.redis = redis
         self.elastic = elastic
+        self._source = ['id', 'title', 'imdb_rating', 'genre']
         self.index = "movies"
-        self._source = ['id', 'title', 'imdb_rating']
 
     # get_by_id возвращает объект фильма
     async def get_by_id(self, film_id: str) -> Optional[Film]:
@@ -34,42 +36,23 @@ class FilmService:
 
         return film
 
-    async def get_all_films(self, query: str = None) -> Optional[list[Film]]:
+    async def get_all_films(
+            self, sorting: str, query: str = None, genre: str = None
+    ) -> Optional[list[Film]]:
         """Производим полнотекстовый поиск по фильмам в Elasticsearch."""
 
-        body = {
-            "query": {
-                "match": {
-                    "title": {
-                        "query": query,
-                        "fuzziness": "auto"
-                    }
-                }
-            }
-        }
-
-        if query is None:
-            body = {
-                "size": 2,
-                "from": 0,
-                "query": {
-                    "match_all": {}
-                }
-            }
+        body = get_params_films_to_elastic(genre, query)
 
         try:
             docs = await self.elastic.search(
-                index=self.index,
+                index="movies",
                 _source=self._source,
                 body=body,
-                sort='imdb_rating:desc'
+                sort=sorting
             )
-            print(docs['hits']['total'])
             hits = docs.get('hits').get('hits')
+            data = [row.get('_source') for row in hits]
 
-            data = []
-            for row in hits:
-                data.append(row.get('_source'))
             return parse_obj_as(list[Film], data)
 
         except NotFoundError:
@@ -80,7 +63,6 @@ class FilmService:
             """ Если он отсутствует в Elasticsearch, значит,
                 фильма вообще нет в базе """
             doc = await self.elastic.get(index=self.index, id=film_id)
-
             return Film(**doc["_source"])
         except NotFoundError:
             return None

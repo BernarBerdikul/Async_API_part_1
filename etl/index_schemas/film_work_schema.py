@@ -6,13 +6,7 @@ FILM_WORK_INDEX_BODY: dict = {
   "mappings": {
     "dynamic": "strict",
     "properties": {
-      "id": {
-        "type": "keyword"
-      },
-      "imdb_rating": {
-        "type": "float"
-      },
-      "genre": {
+      "uuid": {
         "type": "keyword"
       },
       "title": {
@@ -20,34 +14,38 @@ FILM_WORK_INDEX_BODY: dict = {
         "analyzer": "ru_en",
         "fields": {
           "raw": {
-            "type":  "keyword"
+            "type": "keyword"
           }
         }
+      },
+      "imdb_rating": {
+        "type": "float"
       },
       "description": {
         "type": "text",
         "analyzer": "ru_en"
       },
-      "director": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-      "actors_names": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-      "writers_names": {
-        "type": "text",
-        "analyzer": "ru_en"
+      "genre": {
+        "type": "nested",
+        "dynamic": "strict",
+        "properties": {
+          "name": {
+            "type": "text",
+            "analyzer": "ru_en"
+          },
+          "uuid": {
+            "type": "keyword"
+          }
+        }
       },
       "actors": {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
-          "id": {
+          "uuid": {
             "type": "keyword"
           },
-          "name": {
+          "full_name": {
             "type": "text",
             "analyzer": "ru_en"
           }
@@ -57,15 +55,28 @@ FILM_WORK_INDEX_BODY: dict = {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
-          "id": {
+          "uuid": {
             "type": "keyword"
           },
-          "name": {
+          "full_name": {
             "type": "text",
             "analyzer": "ru_en"
           }
         }
-      }
+      },
+      "directors": {
+        "type": "nested",
+        "dynamic": "strict",
+        "properties": {
+          "uuid": {
+            "type": "keyword"
+          },
+          "full_name": {
+            "type": "text",
+            "analyzer": "ru_en"
+          }
+        }
+      },
     }
   }
 }

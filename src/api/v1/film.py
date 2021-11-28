@@ -1,10 +1,11 @@
 from http import HTTPStatus
-from typing import List, Optional, Tuple
-from fastapi_pagination import Page, add_pagination, paginate, LimitOffsetPage
+from typing import List
+from fastapi_pagination import Page, add_pagination, paginate
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination.bases import AbstractPage
 
+from src.api.v1.utils import FilmQueryParams
 from src.models.film import DetailResponseFilm, ListResponseFilm
 from src.models.person import FilmPerson
 from src.services.film import FilmService, get_film_service
@@ -14,19 +15,19 @@ router = APIRouter()
 
 @router.get("/", response_model=Page[ListResponseFilm])
 async def search_film_list(
+        params: FilmQueryParams = Depends(),
         film_service: FilmService = Depends(get_film_service),
-        query: str = None,
-        # filter
+
 ) -> AbstractPage[ListResponseFilm]:
-    films = await film_service.get_all_films(query)
+    films = await film_service.get_all_films(params.sort, params.query, params.genre_filter)
 
     result = [
         ListResponseFilm(
-            uuid=i.id,
-            title=i.title,
-            imdb_rating=i.imdb_rating
-        )
-        for i in films
+                uuid=row.id,
+                title=row.title,
+                imdb_rating=row.imdb_rating
+            )
+        for row in films
     ]
 
     return paginate(result)
