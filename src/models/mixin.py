@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 import orjson
 from pydantic import BaseModel
@@ -16,3 +17,30 @@ class BaseModelMixin(BaseModel):
         # Заменяем стандартную работу с json на более быструю
         json_loads = orjson.loads
         json_dumps = orjson_dumps
+
+
+class PaginationMixin(BaseModel):
+    """
+    Definition of Pagination Schema
+
+    Attributes
+    ----------
+    total: int
+        size of achievement list
+    page: int
+        selected page number
+    page_size: int
+        page size
+    next_page: Optional[int], default = None
+        next page of achievements
+    previous_page: Optional[int], default = None
+        previous page of achievements
+    available_pages: int
+        available pages
+    """
+    total: int
+    page: int
+    page_size: int
+    next_page: Optional[int] = None
+    previous_page: Optional[int] = None
+    available_pages: int

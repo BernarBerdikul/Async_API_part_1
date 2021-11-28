@@ -13,8 +13,9 @@ app = FastAPI(
     docs_url="/api/openapi",  # Адрес документации в красивом интерфейсе
     openapi_url="/api/openapi.json",  # Адрес документации в формате OpenAPI
     redoc_url='/api/redoc',  # Альтернативная документация
-    default_response_class=ORJSONResponse,  # Можно сразу сделать небольшую оптимизацию сервиса
-    # и заменить стандартный JSON-сереализатор на более шуструю версию, написанную на Rust
+    default_response_class=ORJSONResponse,
+    # Можно сразу сделать небольшую оптимизацию сервиса и заменить
+    # стандартный JSON-сереализатор на более шуструю версию, написанную на Rust
 )
 
 
@@ -44,7 +45,7 @@ async def shutdown():
 # Подключаем роутеры к серверу
 app.include_router(film.router, prefix="/api/v1/film", tags=["film"])
 app.include_router(genre.router, prefix="/api/v1/genre", tags=["genre"])
-# app.include_router(person.router, prefix="/api/v1/person", tags=["person"])
+app.include_router(person.router, prefix="/api/v1/person", tags=["person"])
 
 
 if __name__ == "__main__":
