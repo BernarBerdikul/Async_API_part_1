@@ -6,7 +6,7 @@ FILM_WORK_INDEX_BODY: dict = {
   "mappings": {
     "dynamic": "strict",
     "properties": {
-      "uuid": {
+      "id": {
         "type": "keyword"
       },
       "title": {
@@ -33,7 +33,7 @@ FILM_WORK_INDEX_BODY: dict = {
             "type": "text",
             "analyzer": "ru_en"
           },
-          "uuid": {
+          "id": {
             "type": "keyword"
           }
         }
@@ -42,7 +42,7 @@ FILM_WORK_INDEX_BODY: dict = {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
-          "uuid": {
+          "id": {
             "type": "keyword"
           },
           "full_name": {
@@ -55,7 +55,7 @@ FILM_WORK_INDEX_BODY: dict = {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
-          "uuid": {
+          "id": {
             "type": "keyword"
           },
           "full_name": {
@@ -68,7 +68,7 @@ FILM_WORK_INDEX_BODY: dict = {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
-          "uuid": {
+          "id": {
             "type": "keyword"
           },
           "full_name": {

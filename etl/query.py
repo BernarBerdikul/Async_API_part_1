@@ -32,7 +32,8 @@ film_work_query = """
     array_agg(distinct p.full_name) filter (where pfw.role = 'actor') as actors_names,
     array_agg(distinct p.full_name) filter (where pfw.role = 'writer') as writers_names,
     array_agg(distinct jsonb_build_object('id', p.id, 'name', p.full_name)) filter (where pfw.role = 'actor') as actors,
-    array_agg(distinct jsonb_build_object('id', p.id, 'name', p.full_name)) filter (where pfw.role = 'writer') as writers
+    array_agg(distinct jsonb_build_object('id', p.id, 'name', p.full_name)) filter (where pfw.role = 'writer') as writers,
+    array_agg(distinct jsonb_build_object('id', p.id, 'name', p.full_name)) filter (where pfw.role = 'director') as directors
     from content.film_work fw
     left join content.person_film_work as pfw on pfw.film_work_id = fw.id
     left join content.person as p on p.id = pfw.person_id

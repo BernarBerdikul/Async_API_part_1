@@ -1,7 +1,6 @@
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel
 from src.models.mixin import BaseModelMixin, PaginationMixin
-from uuid import UUID
 
 
 class ElasticGenre(BaseModel):
