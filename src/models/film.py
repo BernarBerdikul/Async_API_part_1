@@ -2,7 +2,7 @@ from typing import Optional, List, Dict
 
 from pydantic import BaseModel
 
-from src.models.mixin import BaseModelMixin
+from src.models.mixin import BaseModelMixin, PaginationMixin
 from src.models.person import FilmPerson
 from src.models.genre import FilmGenre
 
@@ -32,3 +32,7 @@ class DetailResponseFilm(ListResponseFilm):
     actors: Optional[List[FilmPerson]] = []
     writers: Optional[List[FilmPerson]] = []
     directors: Optional[List[FilmPerson]] = []
+
+
+class FilmPagination(PaginationMixin):
+    films: List[ListResponseFilm] = []

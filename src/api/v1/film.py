@@ -1,39 +1,32 @@
 from http import HTTPStatus
-from typing import List
-from fastapi_pagination import Page, add_pagination, paginate
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_pagination.bases import AbstractPage
 
 from src.api.v1.utils import FilmQueryParams
-from src.models.film import DetailResponseFilm, ListResponseFilm
+from src.models.film import DetailResponseFilm, FilmPagination
 from src.models.person import FilmPerson
 from src.services.film import FilmService, get_film_service
 
 router = APIRouter()
 
 
-@router.get("/", response_model=Page[ListResponseFilm])
+@router.get("/", response_model=FilmPagination)
 async def search_film_list(
         params: FilmQueryParams = Depends(),
         film_service: FilmService = Depends(get_film_service),
+        page: int = 1, page_size: int = 10
 
-) -> AbstractPage[ListResponseFilm]:
-    films = await film_service.get_all_films(params.sort, params.query, params.genre_filter)
+) -> FilmPagination:
+    films: Optional[dict] = await film_service.get_all_films(
+        params.sort, page, page_size, params.query, params.genre_filter)
 
-    result = [
-        ListResponseFilm(
-                uuid=row.id,
-                title=row.title,
-                imdb_rating=row.imdb_rating
-            )
-        for row in films
-    ]
+    if not films:
+        """ Если жанры не найдены, отдаём 404 статус """
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
+                            detail='films not found')
 
-    return paginate(result)
-
-
-add_pagination(router)
+    return FilmPagination(**films)
 
 
 @router.get('/{film_id}', response_model=DetailResponseFilm)
