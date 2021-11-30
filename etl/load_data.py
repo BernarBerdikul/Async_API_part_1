@@ -34,7 +34,7 @@ if __name__ == '__main__':
     film_work_columns: List[str] = [
         'id', 'title', 'description', 'imdb_rating',
         'genre', 'director', 'actors_names', 'writers_names',
-        'actors', 'writers'
+        'actors', 'writers', 'directors'
     ]
     genre_columns: List[str] = [
         'id', 'name'
