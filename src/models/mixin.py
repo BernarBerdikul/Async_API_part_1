@@ -1,5 +1,6 @@
 from typing import Optional
 from uuid import UUID
+
 import orjson
 from pydantic import BaseModel
 
@@ -38,6 +39,7 @@ class PaginationMixin(BaseModel):
     available_pages: int
         available pages
     """
+
     total: int
     page: int
     page_size: int

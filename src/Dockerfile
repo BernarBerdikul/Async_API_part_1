@@ -15,4 +15,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt --no-cache-dir
 # copy project
 COPY . .
 
-CMD ["uvicorn", "services/main:app", "--reload", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--reload", "--port", "8000"]
