@@ -1,5 +1,5 @@
-from typing import List
 from pydantic import BaseModel
+
 from src.models.mixin import BaseModelMixin, PaginationMixin
 
 
@@ -9,14 +9,16 @@ class ElasticGenre(BaseModel):
 
 
 class FilmGenre(BaseModelMixin):
-    """ Schema for Film work detail """
+    """Schema for Film work detail"""
+
     name: str
 
 
 class DetailResponseGenre(FilmGenre):
-    """ Schema for Genre detail """
-    # film_ids: Optional[List[UUID]] = []
+    """Schema for Genre detail"""
+
+    # film_ids: Optional[list[UUID]] = []
 
 
 class GenrePagination(PaginationMixin):
-    genres: List[FilmGenre] = []
+    genres: list[FilmGenre] = []

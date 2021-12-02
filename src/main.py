@@ -3,6 +3,7 @@ import uvicorn
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+
 from src.api.v1 import film, genre, person
 from src.core import config
 from src.db import elastic, redis
@@ -12,21 +13,21 @@ app = FastAPI(
     version=config.VERSION,  # Указываем версию проекта
     docs_url="/api/openapi",  # Адрес документации в красивом интерфейсе
     openapi_url="/api/openapi.json",  # Адрес документации в формате OpenAPI
-    redoc_url='/api/redoc',  # Альтернативная документация
+    redoc_url="/api/redoc",  # Альтернативная документация
     default_response_class=ORJSONResponse,
     # Можно сразу сделать небольшую оптимизацию сервиса и заменить
     # стандартный JSON-сереализатор на более шуструю версию, написанную на Rust
 )
 
 
-@app.get('/')
+@app.get("/")
 async def root():
-    return {'service': config.PROJECT_NAME, 'version': config.VERSION}
+    return {"service": config.PROJECT_NAME, "version": config.VERSION}
 
 
 @app.on_event("startup")
 async def startup():
-    """ Подключаемся к базам при старте сервера """
+    """Подключаемся к базам при старте сервера"""
     redis.redis = await aioredis.create_redis_pool(
         (config.REDIS_HOST, config.REDIS_PORT), minsize=10, maxsize=20
     )
@@ -37,7 +38,7 @@ async def startup():
 
 @app.on_event("shutdown")
 async def shutdown():
-    """ Отключаемся от баз при выключении сервера """
+    """Отключаемся от баз при выключении сервера"""
     await redis.redis.close()
     await elastic.es.close()
 

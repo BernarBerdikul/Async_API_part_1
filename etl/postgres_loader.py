@@ -1,17 +1,18 @@
 from datetime import datetime
+
 from psycopg2.extensions import connection as _connection
 from psycopg2.extras import DictCursor
 from state import JsonFileStorage, State
 
 
 class PostgresLoader:
-    def __init__(self, pg_conn: _connection, state_file: str, state_key='key'):
+    def __init__(self, pg_conn: _connection, state_file: str, state_key="key"):
         self.conn = pg_conn
         self.cursor = self.conn.cursor(cursor_factory=DictCursor)
         self.key = state_key
-        self.state_key = State(
-            JsonFileStorage(file_path=state_file)
-        ).get_state(state_key)
+        self.state_key = State(JsonFileStorage(file_path=state_file)).get_state(
+            state_key
+        )
         self.batch = 100
         self.data = []
         self.count = 0

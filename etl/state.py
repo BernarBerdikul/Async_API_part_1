@@ -24,16 +24,16 @@ class JsonFileStorage(BaseStorage):
         if self.file_path is None:
             return
 
-        with open(self.file_path, 'w') as f:
+        with open(self.file_path, "w") as f:
             json.dump(state, f)
 
     def retrieve_state(self) -> dict:
         if self.file_path is None:
-            logging.info('Не установлен путь до файла.')
+            logging.info("Не установлен путь до файла.")
             return {}
 
         try:
-            with open(self.file_path, 'r') as f:
+            with open(self.file_path, "r") as f:
                 data = json.load(f)
                 if not data:
                     return {}
@@ -45,7 +45,6 @@ class JsonFileStorage(BaseStorage):
 
 
 class State:
-
     def __init__(self, storage: BaseStorage):
         self.storage = storage
         self.state = self.retrieve_state()

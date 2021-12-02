@@ -5,7 +5,6 @@ from functools import wraps
 
 
 def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=3):
-
     def func_wrapper(func):
         @wraps(func)
         def inner(*args, **kwargs):
@@ -20,13 +19,15 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=3):
                         t = border_sleep_time
                     if t < border_sleep_time:
                         t *= factor
-                    logging.error(f'{datetime.now()}\n\n{Exception} \n\n Попытка подключение №{count}')
+                    logging.error(
+                        f"{datetime.now()}\n\n{Exception} \n\n Попытка подключение №{count}"
+                    )
                     count += 1
                     continue
                 finally:
                     if count == 10:
                         logging.info(
-                            f'{datetime.now()}\n\nИсчерпано максимальное количество подключений={count}.\n'
+                            f"{datetime.now()}\n\nИсчерпано максимальное количество подключений={count}.\n"
                         )
                         break
 
