@@ -29,7 +29,7 @@ class FilmService(ServiceMixin):
 
         key = str(str(page) + str(page_size) + 'films' + str(query))
 
-        instance = await self._result_from_cache_films(key=key, schema=ESFilm)
+        instance = await self._get_result_from_cache(key=key)
         if not instance:
             """Если данных нет в кеше, то ищем его в Elasticsearch"""
             body = get_params_films_to_elastic(
@@ -51,7 +51,8 @@ class FilmService(ServiceMixin):
             ]
 
             """ Сохраняем фильм в кеш """
-            await self._put_result_to_cache_films(key=key, instance=films)
+            data = orjson.dumps([i.dict() for i in films])
+            await self._put_data_to_cache(key=key, instance=data)
 
             return get_by_pagination(
                 name="films",
@@ -72,8 +73,6 @@ class FilmService(ServiceMixin):
             page=page,
             page_size=page_size,
         )
-
-
 
 
 # get_film_service — это провайдер FilmService. Синглтон

@@ -1,11 +1,10 @@
-from typing import Optional, Type, Union
+from typing import Optional, Union
 
-import orjson
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from src.core.config import CACHE_EXPIRE_IN_SECONDS
-from src.models.film import ESFilm, ListResponseFilm
+from src.models.film import ESFilm
 from src.models.genre import ElasticGenre
 from src.models.person import ElasticPerson
 
@@ -33,7 +32,7 @@ class ServiceMixin:
 
     async def get_by_id(self, target_id: str, schema: Schemas) -> Optional[ES_schemas]:
         """Пытаемся получить данные из кеша, потому что оно работает быстрее"""
-        instance = await self._result_from_cache(key=target_id, schema=schema)
+        instance = await self._get_result_from_cache(key=target_id)
         if not instance:
             """Если данных нет в кеше, то ищем его в Elasticsearch"""
             instance = await self._get_data_from_elastic_by_id(
@@ -42,8 +41,9 @@ class ServiceMixin:
             if not instance:
                 return None
             """ Сохраняем фильм в кеш """
-            await self._put_result_to_cache(target_instance=instance)
-        return instance
+            await self._put_data_to_cache(key=instance.id, instance=instance.json())
+            return instance
+        return schema.parse_raw(instance)
 
     async def _get_data_from_elastic_by_id(
         self, target_id: str, schema: Schemas
@@ -55,40 +55,19 @@ class ServiceMixin:
         except NotFoundError:
             return None
 
-    async def _result_from_cache(
-        self, key: str, schema: Type[ES_schemas]
-    ) -> Optional[ES_schemas]:
+    async def _get_result_from_cache(self, key: str) -> bytes or None:
         """Пытаемся получить данные об объекте из кеша"""
         data = await self.redis.get(key=key)
         if not data:
             return None
         """создания объекта моделей из json"""
-        return schema.parse_raw(data)
+        return data
 
-    async def _put_result_to_cache(self, target_instance: ES_schemas) -> None:
+    async def _put_data_to_cache(self, key: str, instance: bytes or str) -> None:
         """Сохраняем данные об объекте в кеш, время жизни кеша — 5 минут"""
-        await self.redis.set(
-            key=target_instance.id,
-            value=target_instance.json(),
-            expire=CACHE_EXPIRE_IN_SECONDS,
-        )
-
-    async def _put_result_to_cache_films(self, key: str, instance: ES_schemas) -> None:
-        """Сохраняем данные об объекте в кеш, время жизни кеша — 5 минут"""
-        data = orjson.dumps([i.dict() for i in instance])
-
         await self.redis.set(
             key=key,
-            value=data,
+            value=instance,
             expire=CACHE_EXPIRE_IN_SECONDS,
         )
 
-    async def _result_from_cache_films(
-        self, key: str, schema: Optional[ES_schemas]
-    ) -> Optional[ES_schemas]:
-        """Пытаемся получить данные об объекте из кеша"""
-        data = await self.redis.get(key=key)
-        print('----', data)
-        if not data:
-            return None
-        return data
