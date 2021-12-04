@@ -5,14 +5,13 @@ import orjson
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
-from pydantic import parse_obj_as
 
 from src.db.elastic import get_elastic
 from src.db.redis import get_redis
 from src.models.film import ESFilm, ListResponseFilm
 from src.services.mixins import ServiceMixin
 from src.services.pagination import get_by_pagination
-from src.services.utils import get_params_films_to_elastic
+from src.services.utils import get_params_films_to_elastic, get_hits
 
 
 class FilmService(ServiceMixin):
@@ -39,15 +38,13 @@ class FilmService(ServiceMixin):
                 body=body, _source=_source, sort=sorting
             )
 
-            total: int = docs.get("hits").get("total").get("value", 0)
-            hits: dict = docs.get("hits").get("hits")
-            data = [row.get("_source") for row in hits]
-            parse_data = parse_obj_as(list[ESFilm], data)
+            hits = get_hits(docs, ESFilm)
+
             films: list[ListResponseFilm] = [
                 ListResponseFilm(
                     uuid=row.id, title=row.title, imdb_rating=row.imdb_rating
                 )
-                for row in parse_data
+                for row in hits
             ]
 
             """ Сохраняем фильм в кеш """
@@ -57,7 +54,7 @@ class FilmService(ServiceMixin):
             return get_by_pagination(
                 name="films",
                 db_objects=films,
-                total=total,
+                total=len(films),
                 page=page,
                 page_size=page_size,
             )
