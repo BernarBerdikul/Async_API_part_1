@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import parse_obj_as
 
-from services.mixins import ES_schemas, Schemas
+from services.mixins import Schemas
 
 
 def get_params_films_to_elastic(

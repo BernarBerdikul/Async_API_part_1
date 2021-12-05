@@ -17,16 +17,16 @@ from src.services.utils import get_params_films_to_elastic, get_hits
 class FilmService(ServiceMixin):
     async def get_all_films(
         self,
-        sorting: str,
         page: int,
         page_size: int,
+        sorting: str = None,
         query: str = None,
         genre: str = None,
     ) -> Optional[dict]:
         """Производим полнотекстовый поиск по фильмам в Elasticsearch."""
         _source: list[str] = ["id", "title", "imdb_rating", "genre"]
 
-        key = str(str(page) + str(page_size) + 'films' + str(query))
+        key = str(str(page) + str(page_size) + 'films' + str(query) + str(genre) + str(sorting))
 
         instance = await self._get_result_from_cache(key=key)
         if not instance:

@@ -24,6 +24,12 @@ class ServiceMixin:
         if not _index:
             _index = self.index
         try:
+            if sort[0] is not None:
+                if sort[0][0] == "-":
+                    sort = sort[0].removeprefix("-")
+                    sort = sort + ":desc"
+            else:
+                sort = "imdb_rating:desc"
             return await self.elastic.search(
                 index=_index, _source=_source, body=body, sort=sort
             )
