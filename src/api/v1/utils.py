@@ -1,12 +1,6 @@
-import enum
 from typing import Optional
 
 from fastapi import Query
-
-
-class FilmSortImdbRating(str, enum.Enum):
-    descending = "imdb_rating:desc"
-    ascending = "imdb_rating"
 
 
 class FilmQueryParams:
@@ -16,10 +10,13 @@ class FilmQueryParams:
 
     def __init__(
         self,
-        sort_imdb_rating: FilmSortImdbRating = Query(
-            FilmSortImdbRating.descending,
+        sort_imdb_rating: Optional[str] = Query(
+            None,
             title="Сортировка по рейтингу",
-            description="Сортирует по возрастанию и убыванию",
+            description="Сортирует по возрастанию и убыванию,"
+                        " -field если нужна сортировка по убыванию или field,"
+                        " если нужна сортировка по возрастанию",
+            alias="sort",
         ),
         genre_filter: Optional[str] = Query(
             None,

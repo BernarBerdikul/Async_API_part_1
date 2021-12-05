@@ -1,3 +1,10 @@
+from typing import Optional
+
+from pydantic import parse_obj_as
+
+from services.mixins import Schemas
+
+
 def get_params_films_to_elastic(
     page_size: int, page: int, genre: str = None, query: str = None
 ):
@@ -34,3 +41,10 @@ def get_params_films_to_elastic(
             }
         }
     return body
+
+
+def get_hits(docs: Optional[dict], schema: Schemas):
+    hits: dict = docs.get("hits").get("hits")
+    data = [row.get("_source") for row in hits]
+    parse_data = parse_obj_as(list[schema], data)
+    return parse_data
