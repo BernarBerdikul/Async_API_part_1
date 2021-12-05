@@ -34,7 +34,7 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"ids": {"values": film_ids}},
         }
-        key = str(str(page) + str(page_size) + 'persons' + str(body))
+        key = f'{page}{page_size}persons{body}'
         instance = await self._get_result_from_cache(key=key)
         if not instance:
 
@@ -77,7 +77,7 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"bool": {"must": [{"match": {"full_name": query}}]}},
         }
-        key = str(str(page) + str(page_size) + 'persons' + str(body))
+        key = f'{page}{page_size}persons{body}'
         instance = await self._get_result_from_cache(key=key)
 
         if not instance:

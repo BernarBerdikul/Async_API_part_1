@@ -23,7 +23,7 @@ class GenreService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"match_all": {}},
         }
-        key = str(str(page) + str(body) + 'genre' + str(page_size))
+        key = f'{page}{body}genre{page_size}'
 
         instance = await self._get_result_from_cache(key=key)
         if not instance:

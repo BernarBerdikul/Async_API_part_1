@@ -26,7 +26,7 @@ class FilmService(ServiceMixin):
         """Производим полнотекстовый поиск по фильмам в Elasticsearch."""
         _source: list[str] = ["id", "title", "imdb_rating", "genre"]
 
-        key = str(str(page) + str(page_size) + 'films' + str(query) + str(genre) + str(sorting))
+        key = f'{page}{page_size}films{query}{genre}{sorting}'
 
         instance = await self._get_result_from_cache(key=key)
         if not instance:
