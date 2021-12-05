@@ -6,12 +6,12 @@ from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
+from db.elastic import get_elastic
+from db.redis import get_redis
+from models.genre import ElasticGenre, FilmGenre
+from services.mixins import ServiceMixin
+from services.pagination import get_by_pagination
 from services.utils import get_hits
-from src.db.elastic import get_elastic
-from src.db.redis import get_redis
-from src.models.genre import ElasticGenre, FilmGenre
-from src.services.mixins import ServiceMixin
-from src.services.pagination import get_by_pagination
 
 
 class GenreService(ServiceMixin):
@@ -23,7 +23,7 @@ class GenreService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"match_all": {}},
         }
-        key = f'{page}{body}genre{page_size}'
+        key = f"{page}{body}genre{page_size}"
 
         instance = await self._get_result_from_cache(key=key)
         if not instance:
@@ -33,8 +33,7 @@ class GenreService(ServiceMixin):
             hits = get_hits(docs, ElasticGenre)
 
             genres: list[FilmGenre] = [
-                FilmGenre(uuid=es_genre.id, name=es_genre.name)
-                for es_genre in hits
+                FilmGenre(uuid=es_genre.id, name=es_genre.name) for es_genre in hits
             ]
 
             data = orjson.dumps([i.dict() for i in genres])
@@ -48,9 +47,7 @@ class GenreService(ServiceMixin):
                 page_size=page_size,
             )
 
-        genres = [
-            FilmGenre(**row) for row in orjson.loads(instance)
-        ]
+        genres = [FilmGenre(**row) for row in orjson.loads(instance)]
 
         return get_by_pagination(
             name="genres",

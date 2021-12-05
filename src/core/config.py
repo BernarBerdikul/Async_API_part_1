@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.core.logger import LOGGING
+from core.logger import LOGGING
 
 env_path = Path(__file__).resolve().parent.parent.parent / "envs/fastapi.env"
 load_dotenv(dotenv_path=env_path)

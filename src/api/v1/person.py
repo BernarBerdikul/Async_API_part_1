@@ -3,9 +3,9 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from src.models.film import FilmPagination
-from src.models.person import DetailResponsePerson, PersonPagination
-from src.services.person import PersonService, get_person_service
+from models.film import FilmPagination
+from models.person import DetailResponsePerson, PersonPagination
+from services.person import PersonService, get_person_service
 
 router = APIRouter()
 

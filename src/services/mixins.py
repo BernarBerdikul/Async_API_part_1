@@ -3,10 +3,10 @@ from typing import Optional, Union
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
-from src.core.config import CACHE_EXPIRE_IN_SECONDS
-from src.models.film import ESFilm
-from src.models.genre import ElasticGenre
-from src.models.person import ElasticPerson
+from core.config import CACHE_EXPIRE_IN_SECONDS
+from models.film import ESFilm
+from models.genre import ElasticGenre
+from models.person import ElasticPerson
 
 Schemas: tuple = (ESFilm, ElasticGenre, ElasticPerson)
 ES_schemas = Union[Schemas]
@@ -24,12 +24,11 @@ class ServiceMixin:
         if not _index:
             _index = self.index
         try:
-            if sort[0] is not None:
-                if sort[0][0] == "-":
-                    sort = sort[0].removeprefix("-")
-                    sort = sort + ":desc"
-            else:
-                sort = "imdb_rating:desc"
+            if sort:
+                if sort[0] and sort[0][0] == "-":
+                    sort: str = f"{sort[0].removeprefix('-')}:desc"
+                else:
+                    sort: str = "imdb_rating:desc"
             return await self.elastic.search(
                 index=_index, _source=_source, body=body, sort=sort
             )
@@ -61,7 +60,7 @@ class ServiceMixin:
         except NotFoundError:
             return None
 
-    async def _get_result_from_cache(self, key: str) -> bytes or None:
+    async def _get_result_from_cache(self, key: str) -> Optional[bytes]:
         """Пытаемся получить данные об объекте из кеша"""
         data = await self.redis.get(key=key)
         if not data:
@@ -69,11 +68,6 @@ class ServiceMixin:
         """создания объекта моделей из json"""
         return data
 
-    async def _put_data_to_cache(self, key: str, instance: bytes or str) -> None:
+    async def _put_data_to_cache(self, key: str, instance: Union[bytes, str]) -> None:
         """Сохраняем данные об объекте в кеш, время жизни кеша — 5 минут"""
-        await self.redis.set(
-            key=key,
-            value=instance,
-            expire=CACHE_EXPIRE_IN_SECONDS,
-        )
-
+        await self.redis.set(key=key, value=instance, expire=CACHE_EXPIRE_IN_SECONDS)

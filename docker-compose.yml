@@ -1,7 +1,7 @@
 
 services:
   redis:
-    image: docker.io/bitnami/redis:5.0.12
+    image: docker.io/bitnami/redis:5.0.14
     container_name: redis
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
@@ -23,9 +23,9 @@ services:
     ports:
       - "9200:9200"
 
-  postgres_db:
+  postgres_etl:
     image: postgres:13.3-alpine
-    container_name: postgres_db
+    container_name: postgres_etl
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -36,7 +36,7 @@ services:
       - "5432:5432"
 
   fastapi:
-    container_name: api
+    container_name: fastapi
     build:
       context: ./src
       dockerfile: Dockerfile
@@ -48,14 +48,12 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+      - elasticsearch
 
   etl:
     container_name: etl
-    deploy:
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 5s
+    volumes:
+      - etl_logs:/usr/src/app/logs/
     build:
       context: ./etl
       dockerfile: Dockerfile
@@ -65,10 +63,11 @@ services:
       - api_network
     depends_on:
       - elasticsearch
-      - postgres_db
+      - postgres_etl
 
 networks:
   api_network:
 
 volumes:
   postgres_data:
+  etl_logs:
