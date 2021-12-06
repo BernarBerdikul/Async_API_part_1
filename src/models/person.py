@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from src.models.mixin import BaseModelMixin, PaginationMixin
+from models.mixin import BaseModelMixin, PaginationMixin
 
 
 class ElasticPerson(BaseModel):

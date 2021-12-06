@@ -7,13 +7,13 @@ from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends, HTTPException
 
+from db.elastic import get_elastic
+from db.redis import get_redis
+from models.film import ESFilm, ListResponseFilm
+from models.person import DetailResponsePerson, ElasticPerson
+from services.mixins import ServiceMixin
+from services.pagination import get_by_pagination
 from services.utils import get_hits
-from src.db.elastic import get_elastic
-from src.db.redis import get_redis
-from src.models.film import ESFilm, ListResponseFilm
-from src.models.person import DetailResponsePerson, ElasticPerson
-from src.services.mixins import ServiceMixin
-from src.services.pagination import get_by_pagination
 
 
 class PersonService(ServiceMixin):
@@ -34,11 +34,13 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"ids": {"values": film_ids}},
         }
-        key = f'{page}{page_size}persons{body}'
+        key = f"{page}{page_size}persons{body}"
         instance = await self._get_result_from_cache(key=key)
         if not instance:
 
-            docs: Optional[dict] = await self.search_in_elastic(body=body, _index="movies")
+            docs: Optional[dict] = await self.search_in_elastic(
+                body=body, _index="movies"
+            )
 
             hits = get_hits(docs, ESFilm)
             person_films: list[ListResponseFilm] = [
@@ -57,9 +59,7 @@ class PersonService(ServiceMixin):
                 page=page,
                 page_size=page_size,
             )
-        person_films = [
-            ListResponseFilm(**row) for row in orjson.loads(instance)
-        ]
+        person_films = [ListResponseFilm(**row) for row in orjson.loads(instance)]
 
         return get_by_pagination(
             name="films",
@@ -77,7 +77,7 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"bool": {"must": [{"match": {"full_name": query}}]}},
         }
-        key = f'{page}{page_size}persons{body}'
+        key = f"{page}{page_size}persons{body}"
         instance = await self._get_result_from_cache(key=key)
 
         if not instance:
@@ -103,9 +103,7 @@ class PersonService(ServiceMixin):
                 page=page,
                 page_size=page_size,
             )
-        persons = [
-            DetailResponsePerson(**row) for row in orjson.loads(instance)
-        ]
+        persons = [DetailResponsePerson(**row) for row in orjson.loads(instance)]
 
         return get_by_pagination(
             name="persons",

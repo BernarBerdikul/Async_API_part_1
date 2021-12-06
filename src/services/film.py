@@ -6,12 +6,12 @@ from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
-from src.db.elastic import get_elastic
-from src.db.redis import get_redis
-from src.models.film import ESFilm, ListResponseFilm
-from src.services.mixins import ServiceMixin
-from src.services.pagination import get_by_pagination
-from src.services.utils import get_params_films_to_elastic, get_hits
+from db.elastic import get_elastic
+from db.redis import get_redis
+from models.film import ESFilm, ListResponseFilm
+from services.mixins import ServiceMixin
+from services.pagination import get_by_pagination
+from services.utils import get_hits, get_params_films_to_elastic
 
 
 class FilmService(ServiceMixin):
@@ -26,7 +26,7 @@ class FilmService(ServiceMixin):
         """Производим полнотекстовый поиск по фильмам в Elasticsearch."""
         _source: list[str] = ["id", "title", "imdb_rating", "genre"]
 
-        key = f'{page}{page_size}films{query}{genre}{sorting}'
+        key = f"{page}{page_size}films{query}{genre}{sorting}"
 
         instance = await self._get_result_from_cache(key=key)
         if not instance:
@@ -59,9 +59,7 @@ class FilmService(ServiceMixin):
                 page_size=page_size,
             )
 
-        films_from_cache = [
-            ListResponseFilm(**row) for row in orjson.loads(instance)
-        ]
+        films_from_cache = [ListResponseFilm(**row) for row in orjson.loads(instance)]
 
         return get_by_pagination(
             name="films",

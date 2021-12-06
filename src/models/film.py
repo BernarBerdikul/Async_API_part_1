@@ -2,9 +2,9 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from src.models.genre import FilmGenre
-from src.models.mixin import BaseModelMixin, PaginationMixin
-from src.models.person import FilmPerson
+from models.genre import FilmGenre
+from models.mixin import BaseModelMixin, PaginationMixin
+from models.person import FilmPerson
 
 
 class ESFilm(BaseModel):

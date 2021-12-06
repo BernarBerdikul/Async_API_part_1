@@ -4,12 +4,13 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from src.api.v1 import film, genre, person
-from src.core import config
-from src.db import elastic, redis
+from api.v1 import film, genre, person
+from core import config
+from db import elastic, redis
 
 app = FastAPI(
     title=config.PROJECT_NAME,  # Конфигурируем название проекта
+    description=config.PROJECT_NAME,
     version=config.VERSION,  # Указываем версию проекта
     docs_url="/api/openapi",  # Адрес документации в красивом интерфейсе
     openapi_url="/api/openapi.json",  # Адрес документации в формате OpenAPI
@@ -50,8 +51,4 @@ app.include_router(person.router, prefix="/api/v1/person", tags=["person"])
 
 
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-    )
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
