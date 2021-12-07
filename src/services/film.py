@@ -11,7 +11,7 @@ from db.redis import get_redis
 from models.film import ESFilm, ListResponseFilm
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination
-from services.utils import get_hits, get_params_films_to_elastic
+from services.utils import get_hits, get_params_films_to_elastic, create_hash_key
 
 
 class FilmService(ServiceMixin):
@@ -26,7 +26,8 @@ class FilmService(ServiceMixin):
         """Производим полнотекстовый поиск по фильмам в Elasticsearch."""
         _source: list[str] = ["id", "title", "imdb_rating", "genre"]
 
-        key = f"{page}{page_size}films{query}{genre}{sorting}"
+        params = f"{page}{page_size}{query}{genre}{sorting}"
+        key = create_hash_key('movies', params)
 
         instance = await self._get_result_from_cache(key=key)
         if not instance:

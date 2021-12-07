@@ -24,7 +24,7 @@ class FilmQueryParams:
             description="Фильтрует фильмы по жанрам",
             alias="filter[genre]",
         ),
-        query: str = Query(
+        query: Optional[str] = Query(
             None,
             title="Запрос",
             description="Осуществляет поиск по названию фильма",
