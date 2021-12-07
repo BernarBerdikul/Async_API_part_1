@@ -23,14 +23,15 @@ class ServiceMixin:
     ) -> Optional[dict]:
         if not _index:
             _index = self.index
+
+        sort_field = sort[0]
+        if sort_field:
+            order = 'desc' if sort_field.startswith('-') else 'asc'
+            sort_field = "{field}:{order}".format(field=sort_field.removeprefix('-'), order=order)
+
         try:
-            if sort:
-                if sort[0] and sort[0][0] == "-":
-                    sort: str = f"{sort[0].removeprefix('-')}:desc"
-                else:
-                    sort: str = "imdb_rating:desc"
             return await self.elastic.search(
-                index=_index, _source=_source, body=body, sort=sort
+                index=_index, _source=_source, body=body, sort=sort_field
             )
         except NotFoundError:
             return None

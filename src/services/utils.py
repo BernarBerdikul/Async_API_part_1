@@ -1,3 +1,4 @@
+import hashlib
 from typing import Optional
 
 from pydantic import parse_obj_as
@@ -48,3 +49,14 @@ def get_hits(docs: Optional[dict], schema: Schemas):
     data: list = [row.get("_source") for row in hits]
     parse_data = parse_obj_as(list[schema], data)
     return parse_data
+
+
+def create_hash_key(index: str, params: str) -> str:
+    """
+    :param index: индекс в elasticsearch
+    :param params: параметры запроса
+    :return: хешированый ключ в md5
+    """
+    body = '{index_name}:{hash}'.format(index_name=index, hash=params)
+    hash_object = hashlib.md5(body.encode())
+    return hash_object.hexdigest()

@@ -13,7 +13,7 @@ from models.film import ESFilm, ListResponseFilm
 from models.person import DetailResponsePerson, ElasticPerson
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination
-from services.utils import get_hits
+from services.utils import get_hits, create_hash_key
 
 
 class PersonService(ServiceMixin):
@@ -34,7 +34,10 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"ids": {"values": film_ids}},
         }
-        key = f"{page}{page_size}persons{body}"
+
+        params = f"{page}{page_size}{body}"
+        key = create_hash_key('person', params)
+
         instance = await self._get_result_from_cache(key=key)
         if not instance:
 
@@ -77,7 +80,10 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"bool": {"must": [{"match": {"full_name": query}}]}},
         }
-        key = f"{page}{page_size}persons{body}"
+
+        params = f"{page}{page_size}{body}"
+        key = create_hash_key('person', params)
+
         instance = await self._get_result_from_cache(key=key)
 
         if not instance:

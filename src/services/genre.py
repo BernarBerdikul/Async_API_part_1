@@ -11,7 +11,7 @@ from db.redis import get_redis
 from models.genre import ElasticGenre, FilmGenre
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination
-from services.utils import get_hits
+from services.utils import get_hits, create_hash_key
 
 
 class GenreService(ServiceMixin):
@@ -23,7 +23,9 @@ class GenreService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"match_all": {}},
         }
-        key = f"{page}{body}genre{page_size}"
+
+        params = f"{page}{body}{page_size}"
+        key = create_hash_key('genre', params)
 
         instance = await self._get_result_from_cache(key=key)
         if not instance:
