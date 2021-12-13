@@ -57,6 +57,5 @@ def create_hash_key(index: str, params: str) -> str:
     :param params: параметры запроса
     :return: хешированый ключ в md5
     """
-    body = '{index_name}:{hash}'.format(index_name=index, hash=params)
-    hash_object = hashlib.md5(body.encode())
-    return hash_object.hexdigest()
+    hash_key = hashlib.md5(params.encode()).hexdigest()
+    return f'{index}:{hash_key}'
