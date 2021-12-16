@@ -44,7 +44,7 @@ class GenreService(ServiceMixin):
             return get_by_pagination(
                 name="genres",
                 db_objects=genres,
-                total=len(hits),
+                total=docs.get("hits").get("total").get("value", 0),
                 page=page,
                 page_size=page_size,
             )

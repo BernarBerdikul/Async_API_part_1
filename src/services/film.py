@@ -55,7 +55,7 @@ class FilmService(ServiceMixin):
             return get_by_pagination(
                 name="films",
                 db_objects=films,
-                total=len(films),
+                total=docs.get("hits").get("total").get("value", 0),
                 page=page,
                 page_size=page_size,
             )

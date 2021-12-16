@@ -19,6 +19,7 @@ from services.utils import get_hits, create_hash_key
 class PersonService(ServiceMixin):
     async def get_person(self, person_id: str):
         person = await self.get_by_id(target_id=person_id, schema=ElasticPerson)
+        print(person)
         if not person:
             """Если персона не найдена, отдаём 404 статус"""
             raise HTTPException(
@@ -34,11 +35,11 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"ids": {"values": film_ids}},
         }
-
         params = f"{page}{page_size}{body}"
-        key = create_hash_key('person', params)
+        key = create_hash_key(index='person', params=params)
 
-        instance = await self._get_result_from_cache(key=key)
+        # instance = await self._get_result_from_cache(key=key)
+        instance = None
         if not instance:
 
             docs: Optional[dict] = await self.search_in_elastic(
@@ -58,7 +59,7 @@ class PersonService(ServiceMixin):
             return get_by_pagination(
                 name="films",
                 db_objects=person_films,
-                total=len(hits),
+                total=docs.get("hits").get("total").get("value", 0),
                 page=page,
                 page_size=page_size,
             )
@@ -82,7 +83,7 @@ class PersonService(ServiceMixin):
         }
 
         params = f"{page}{page_size}{body}"
-        key = create_hash_key('person', params)
+        key = create_hash_key(index='person', params=params)
 
         instance = await self._get_result_from_cache(key=key)
 
@@ -105,7 +106,7 @@ class PersonService(ServiceMixin):
             return get_by_pagination(
                 name="persons",
                 db_objects=persons,
-                total=len(hits),
+                total=docs.get("hits").get("total").get("value", 0),
                 page=page,
                 page_size=page_size,
             )
