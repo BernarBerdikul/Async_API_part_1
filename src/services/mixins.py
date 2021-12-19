@@ -23,10 +23,10 @@ class ServiceMixin:
     ) -> Optional[dict]:
         if not _index:
             _index = self.index
-        print(sort)
+
         sort_field = sort[0] if not isinstance(sort, str) and sort else sort
         if sort_field:
-            order = 'desc' if sort_field.startswith('-') else 'asc'
+            order = "desc" if sort_field.startswith("-") else "asc"
             sort_field = f"{sort_field.removeprefix('-')}:{order}"
         try:
             return await self.elastic.search(

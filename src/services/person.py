@@ -13,13 +13,13 @@ from models.film import ESFilm, ListResponseFilm
 from models.person import DetailResponsePerson, ElasticPerson
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination
-from services.utils import get_hits, create_hash_key
+from services.state_service import my_state
+from services.utils import create_hash_key, get_hits
 
 
 class PersonService(ServiceMixin):
     async def get_person(self, person_id: str):
         person = await self.get_by_id(target_id=person_id, schema=ElasticPerson)
-        print(person)
         if not person:
             """Если персона не найдена, отдаём 404 статус"""
             raise HTTPException(
@@ -35,18 +35,23 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"ids": {"values": film_ids}},
         }
-        params = f"{page}{page_size}{body}"
-        key = create_hash_key(index='person', params=params)
-
-        # instance = await self._get_result_from_cache(key=key)
-        instance = None
+        state_key: str = "person_films"
+        """ Получаем число фильмов персоны из стейт """
+        state_total: int = my_state.get_state(key=state_key)
+        params: str = f"{state_total}{page}{page_size}{body}"
+        """ Пытаемся получить фильмы персоны из кэша """
+        instance = await self._get_result_from_cache(
+            key=create_hash_key(index=self.index, params=params)
+        )
         if not instance:
-
             docs: Optional[dict] = await self.search_in_elastic(
                 body=body, _index="movies"
             )
-
-            hits = get_hits(docs, ESFilm)
+            """ Получаем фильмы персоны из ES """
+            hits = get_hits(docs=docs, schema=ESFilm)
+            """ Получаем число фильмов персоны """
+            total: int = int(docs.get("hits").get("total").get("value", 0))
+            """ Прогоняем данные через pydantic """
             person_films: list[ListResponseFilm] = [
                 ListResponseFilm(
                     uuid=film.id, title=film.title, imdb_rating=film.imdb_rating
@@ -54,21 +59,26 @@ class PersonService(ServiceMixin):
                 for film in hits
             ]
             data = orjson.dumps([i.dict() for i in person_films])
-            await self._put_data_to_cache(key=key, instance=data)
-
+            new_param: str = f"{total}{page}{body}{page_size}"
+            await self._put_data_to_cache(
+                key=create_hash_key(index=state_key, params=new_param), instance=data
+            )
+            """ Сохраняем число персон в стейт """
+            my_state.set_state(key=state_key, value=total)
             return get_by_pagination(
                 name="films",
                 db_objects=person_films,
-                total=docs.get("hits").get("total").get("value", 0),
+                total=total,
                 page=page,
                 page_size=page_size,
             )
-        person_films = [ListResponseFilm(**row) for row in orjson.loads(instance)]
-
+        person_films: list[ListResponseFilm] = [
+            ListResponseFilm(**row) for row in orjson.loads(instance)
+        ]
         return get_by_pagination(
             name="films",
             db_objects=person_films,
-            total=len(person_films),
+            total=state_total,
             page=page,
             page_size=page_size,
         )
@@ -81,15 +91,20 @@ class PersonService(ServiceMixin):
             "from": (page - 1) * page_size,
             "query": {"bool": {"must": [{"match": {"full_name": query}}]}},
         }
-
-        params = f"{page}{page_size}{body}"
-        key = create_hash_key(index='person', params=params)
-
-        instance = await self._get_result_from_cache(key=key)
-
+        """ Получаем число персон из стейт """
+        state_total: int = my_state.get_state(key=self.index)
+        params: str = f"{state_total}{page}{page_size}{body}"
+        """ Пытаемся получить данные из кэша """
+        instance = await self._get_result_from_cache(
+            key=create_hash_key(index=self.index, params=params)
+        )
         if not instance:
             docs: Optional[dict] = await self.search_in_elastic(body=body)
-            hits = get_hits(docs, ElasticPerson)
+            """ Получаем персон из ES """
+            hits = get_hits(docs=docs, schema=ElasticPerson)
+            """ Получаем число персон """
+            total: int = int(docs.get("hits").get("total").get("value", 0))
+            """ Прогоняем данные через pydantic """
             persons: list[DetailResponsePerson] = [
                 DetailResponsePerson(
                     uuid=es_person.id,
@@ -99,23 +114,28 @@ class PersonService(ServiceMixin):
                 )
                 for es_person in hits
             ]
-
+            """ Сохраняем персон в кеш """
             data = orjson.dumps([i.dict() for i in persons])
-            await self._put_data_to_cache(key=key, instance=data)
-
+            new_param: str = f"{total}{page}{body}{page_size}"
+            await self._put_data_to_cache(
+                key=create_hash_key(index=self.index, params=new_param), instance=data
+            )
+            """ Сохраняем число персон в стейт """
+            my_state.set_state(key=self.index, value=total)
             return get_by_pagination(
                 name="persons",
                 db_objects=persons,
-                total=docs.get("hits").get("total").get("value", 0),
+                total=total,
                 page=page,
                 page_size=page_size,
             )
-        persons = [DetailResponsePerson(**row) for row in orjson.loads(instance)]
-
+        persons: list[DetailResponsePerson] = [
+            DetailResponsePerson(**row) for row in orjson.loads(instance)
+        ]
         return get_by_pagination(
             name="persons",
             db_objects=persons,
-            total=len(persons),
+            total=state_total,
             page=page,
             page_size=page_size,
         )

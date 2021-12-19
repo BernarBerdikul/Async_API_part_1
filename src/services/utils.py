@@ -8,7 +8,7 @@ from services.mixins import Schemas
 
 def get_params_films_to_elastic(
     page_size: int, page: int, genre: str = None, query: str = None
-):
+) -> dict:
     """
     :param page:
     :param page_size:
@@ -58,4 +58,4 @@ def create_hash_key(index: str, params: str) -> str:
     :return: хешированый ключ в md5
     """
     hash_key = hashlib.md5(params.encode()).hexdigest()
-    return f'{index}:{hash_key}'
+    return f"{index}:{hash_key}"

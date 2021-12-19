@@ -38,7 +38,6 @@ class ElasticSearchLoader:
         """
         data_json = json.dumps(actions)
         load_json = json.loads(data_json)
-
         for row in load_json:
             self.data.append({"create": {"_index": self.index_name, "_id": row["id"]}})
             self.data.append(row)

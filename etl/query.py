@@ -39,7 +39,7 @@ film_work_query = """
     left join content.person as p on p.id = pfw.person_id
     left join content.genre_film_work gfw on gfw.film_work_id = fw.id
     left join content.genre g on g.id = gfw.genre_id
-    where greatest(fw.updated_at,  p.updated_at, g.updated_at) > '%s'
+    where greatest(fw.updated_at, p.updated_at, g.updated_at) > '%s'
     group by fw.id
     order by greatest(fw.updated_at,  max(p.updated_at), max(g.updated_at)) asc;
 """
