@@ -11,7 +11,6 @@ from db.redis import get_redis
 from models.genre import ElasticGenre, FilmGenre
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination
-from services.state_service import my_state
 from services.utils import create_hash_key, get_hits
 
 
@@ -25,7 +24,7 @@ class GenreService(ServiceMixin):
             "query": {"match_all": {}},
         }
         """ Получаем число фильмов из стейт """
-        state_total: int = my_state.get_state(key=self.index)
+        state_total: int = await self.get_total_count()
         params: str = f"{state_total}{page}{body}{page_size}"
         """ Пытаемся получить данные из кэша """
         instance = await self._get_result_from_cache(
@@ -48,7 +47,7 @@ class GenreService(ServiceMixin):
                 key=create_hash_key(index=self.index, params=new_param), instance=data
             )
             """ Сохраняем число жанров в стейт """
-            my_state.set_state(key=self.index, value=total)
+            await self.set_total_count(value=total)
             return get_by_pagination(
                 name="genres",
                 db_objects=genres,

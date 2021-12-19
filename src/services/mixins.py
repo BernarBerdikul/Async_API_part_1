@@ -17,6 +17,13 @@ class ServiceMixin:
         self.redis = redis
         self.elastic = elastic
         self.index = index
+        self.total_count: int = 0
+
+    async def get_total_count(self) -> int:
+        return self.total_count
+
+    async def set_total_count(self, value: int):
+        self.total_count = value
 
     async def search_in_elastic(
         self, body: dict, _source=None, sort=None, _index=None

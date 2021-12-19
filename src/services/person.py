@@ -13,11 +13,21 @@ from models.film import ESFilm, ListResponseFilm
 from models.person import DetailResponsePerson, ElasticPerson
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination
-from services.state_service import my_state
 from services.utils import create_hash_key, get_hits
 
 
 class PersonService(ServiceMixin):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.person_films: int = 0
+
+    async def get_person_films_count(self) -> int:
+        return self.person_films
+
+    async def set_person_films_count(self, value: int):
+        self.person_films = value
+
     async def get_person(self, person_id: str):
         person = await self.get_by_id(target_id=person_id, schema=ElasticPerson)
         if not person:
@@ -30,14 +40,14 @@ class PersonService(ServiceMixin):
     async def get_person_films(
         self, film_ids: list[str], page: int, page_size: int
     ) -> Optional[dict]:
+        """ Получаем число фильмов персоны из стейт """
+        state_total: int = await self.get_person_films_count()
         body: dict = {
             "size": page_size,
             "from": (page - 1) * page_size,
             "query": {"ids": {"values": film_ids}},
         }
         state_key: str = "person_films"
-        """ Получаем число фильмов персоны из стейт """
-        state_total: int = my_state.get_state(key=state_key)
         params: str = f"{state_total}{page}{page_size}{body}"
         """ Пытаемся получить фильмы персоны из кэша """
         instance = await self._get_result_from_cache(
@@ -64,7 +74,7 @@ class PersonService(ServiceMixin):
                 key=create_hash_key(index=state_key, params=new_param), instance=data
             )
             """ Сохраняем число персон в стейт """
-            my_state.set_state(key=state_key, value=total)
+            await self.set_person_films_count(value=total)
             return get_by_pagination(
                 name="films",
                 db_objects=person_films,
@@ -92,7 +102,7 @@ class PersonService(ServiceMixin):
             "query": {"bool": {"must": [{"match": {"full_name": query}}]}},
         }
         """ Получаем число персон из стейт """
-        state_total: int = my_state.get_state(key=self.index)
+        state_total: int = await self.get_total_count()
         params: str = f"{state_total}{page}{page_size}{body}"
         """ Пытаемся получить данные из кэша """
         instance = await self._get_result_from_cache(
@@ -121,7 +131,7 @@ class PersonService(ServiceMixin):
                 key=create_hash_key(index=self.index, params=new_param), instance=data
             )
             """ Сохраняем число персон в стейт """
-            my_state.set_state(key=self.index, value=total)
+            await self.set_total_count(value=total)
             return get_by_pagination(
                 name="persons",
                 db_objects=persons,

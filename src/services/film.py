@@ -11,11 +11,11 @@ from db.redis import get_redis
 from models.film import ESFilm, ListResponseFilm
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination
-from services.state_service import my_state
 from services.utils import create_hash_key, get_hits, get_params_films_to_elastic
 
 
 class FilmService(ServiceMixin):
+
     async def get_all_films(
         self,
         page: int,
@@ -27,7 +27,7 @@ class FilmService(ServiceMixin):
         """Производим полнотекстовый поиск по фильмам в Elasticsearch."""
         _source: tuple = ("id", "title", "imdb_rating", "genre")
         """ Получаем число фильмов из стейт """
-        state_total: int = my_state.get_state(key=self.index)
+        state_total: int = await self.get_total_count()
         params: str = f"{state_total}{page}{page_size}{query}{genre}"
         """ Пытаемся получить данные из кэша """
         instance = await self._get_result_from_cache(
@@ -59,7 +59,7 @@ class FilmService(ServiceMixin):
                 key=create_hash_key(index=self.index, params=new_param), instance=data
             )
             """ Сохраняем число фильмов в стейт """
-            my_state.set_state(key=self.index, value=total)
+            await self.set_total_count(value=total)
             return get_by_pagination(
                 name="films",
                 db_objects=films,
