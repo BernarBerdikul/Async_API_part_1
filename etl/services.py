@@ -30,7 +30,5 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=3):
                             f"{datetime.now()}\n\nИсчерпано максимальное количество подключений={count}.\n"
                         )
                         break
-
         return inner
-
     return func_wrapper

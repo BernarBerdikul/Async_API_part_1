@@ -13,17 +13,15 @@ class PostgresLoader:
         self.state_key = State(JsonFileStorage(file_path=state_file)).get_state(
             state_key
         )
-        self.batch = 100
-        self.data = []
-        self.count = 0
+        self.batch: int = 100
+        self.data: list = []
+        self.count: int = 0
 
     def get_state_key(self):
         """
         Определяем какую дату будем использовать для сравнения при запросе.
         """
-        if self.state_key:
-            return self.state_key
-        return datetime(2005, 7, 14, 12, 30)
+        return self.state_key or datetime(2005, 7, 14, 12, 30)
 
     def loader_from_postgresql(self, query: str) -> list:
         """

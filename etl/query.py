@@ -1,4 +1,4 @@
-genre_query = """
+genre_query: str = """
     SELECT id, name, updated_at
     FROM content.genre
     WHERE updated_at > '%s'
@@ -6,7 +6,7 @@ genre_query = """
 """
 
 
-person_query = """
+person_query: str = """
     SELECT
     p.id,
     p.full_name,
@@ -21,7 +21,7 @@ person_query = """
 """
 
 
-film_work_query = """
+film_work_query: str = """
     select
     fw.id,
     fw.title,
