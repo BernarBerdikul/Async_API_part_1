@@ -33,3 +33,19 @@ class FilmQueryParams:
         self.sort = (sort_imdb_rating,)
         self.genre_filter = genre_filter
         self.query = query
+
+
+class PersonSearchParam:
+    """
+    Класс задает параметры для поиска персоны по имени
+    """
+
+    def __init__(
+        self, query: Optional[str] = Query(
+            None,
+            title="Запрос",
+            description="Осуществляет поиск по имени персоны",
+        ),
+    ) -> None:
+        self.query = query
+

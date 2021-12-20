@@ -45,9 +45,9 @@ async def shutdown():
 
 
 # Подключаем роутеры к серверу
-app.include_router(film.router, prefix="/api/v1/film", tags=["film"])
-app.include_router(genre.router, prefix="/api/v1/genre", tags=["genre"])
-app.include_router(person.router, prefix="/api/v1/person", tags=["person"])
+app.include_router(film.router, prefix="/api/v1/film")
+app.include_router(genre.router, prefix="/api/v1/genre")
+app.include_router(person.router, prefix="/api/v1/person")
 
 
 if __name__ == "__main__":

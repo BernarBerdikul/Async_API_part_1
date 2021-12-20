@@ -7,18 +7,27 @@ from models.film import FilmPagination
 from models.person import DetailResponsePerson, PersonPagination
 from services.person import PersonService, get_person_service
 
+from api.v1.utils import PersonSearchParam
+
 router = APIRouter()
 
 
-@router.get("/search", response_model=PersonPagination)
+@router.get(
+    path="/search",
+    response_model=PersonPagination,
+    summary="Поиск персоны по его имени",
+    description="Поиск персоны по его имени",
+    response_description="Список персон с их именем, ролью и фильмографией",
+    tags=['person_service']
+)
 async def person_search(
-    query: str,
+    params: PersonSearchParam = Depends(),
     person_service: PersonService = Depends(get_person_service),
     page: int = 1,
     page_size: int = 10,
 ) -> PersonPagination:
     persons: Optional[dict] = await person_service.search_person(
-        query=query, page=page, page_size=page_size
+        query=params.query, page=page, page_size=page_size
     )
     if not persons:
         """Если персоны не найдены, отдаём 404 статус"""
@@ -28,7 +37,14 @@ async def person_search(
     return PersonPagination(**persons)
 
 
-@router.get("/{person_id}", response_model=DetailResponsePerson)
+@router.get(
+    path="/{person_id}",
+    response_model=DetailResponsePerson,
+    summary="Поиск персоны по ID",
+    description="Поиск персоны по ID",
+    response_description="Имя, роль и фильмография персоны",
+    tags=['person_service']
+)
 async def person_details(
     person_id: str, person_service: PersonService = Depends(get_person_service)
 ) -> DetailResponsePerson:
@@ -41,7 +57,15 @@ async def person_details(
     )
 
 
-@router.get("/{person_id}/film/", response_model=FilmPagination)
+@router.get(
+    path="/{person_id}/film/",
+    response_model=FilmPagination,
+    summary="Поиск персоны по его ID и выдача всех его кинопроизведений",
+    description="Поиск персоны по его ID и выдача всех его кинопроизведений,"
+                "в которых он принимал участие",
+    response_description="Название жанра",
+    tags=['person_service']
+)
 async def person_details(
     person_id: str,
     person_service: PersonService = Depends(get_person_service),

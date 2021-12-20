@@ -40,6 +40,8 @@ class FilmService(ServiceMixin):
             docs: Optional[dict] = await self.search_in_elastic(
                 body=body, _source=_source, sort=sorting
             )
+            if not docs:
+                return None
             """ Получаем фильмы из ES """
             hits = get_hits(docs=docs, schema=ESFilm)
             """ Получаем число фильмов """

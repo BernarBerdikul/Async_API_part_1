@@ -11,7 +11,14 @@ from services.film import FilmService, get_film_service
 router = APIRouter()
 
 
-@router.get("/", response_model=FilmPagination)
+@router.get(
+    path="/",
+    response_model=FilmPagination,
+    summary="Поиск кинопроизведений",
+    description="Полнотекстовый поиск по кинопроизведениям",
+    response_description="Название и рейтинг фильма",
+    tags=['film_service']
+)
 async def search_film_list(
     params: FilmQueryParams = Depends(),
     film_service: FilmService = Depends(get_film_service),
@@ -31,7 +38,14 @@ async def search_film_list(
     return FilmPagination(**films)
 
 
-@router.get("/{film_id}", response_model=DetailResponseFilm)
+@router.get(
+    path="/{film_id}",
+    response_model=DetailResponseFilm,
+    summary="Поиск кинопроизведения по ID",
+    description="Поиск кинопроизведения по ID",
+    response_description="Полная информация о фильме",
+    tags=['film_service']
+)
 async def film_details(
     film_id: str, film_service: FilmService = Depends(get_film_service)
 ) -> DetailResponseFilm:

@@ -9,7 +9,14 @@ from services.genre import GenreService, get_genre_service
 router = APIRouter()
 
 
-@router.get("/", response_model=GenrePagination)
+@router.get(
+    path="/",
+    response_model=GenrePagination,
+    summary="Список жанров кино",
+    description="Список жанров кино",
+    response_description="Название жанра",
+    tags=['genre_service']
+)
 async def genres_list(
     genre_service: GenreService = Depends(get_genre_service),
     page: int = 1,
@@ -24,7 +31,14 @@ async def genres_list(
     return GenrePagination(**genres)
 
 
-@router.get("/{genre_id}", response_model=DetailResponseGenre)
+@router.get(
+    path="/{genre_id}",
+    response_model=DetailResponseGenre,
+    summary="Поиск жанра по ID",
+    description="Поиск жанра по ID",
+    response_description="Название жанра",
+    tags=['genre_service']
+)
 async def genre_details(
     genre_id: str, genre_service: GenreService = Depends(get_genre_service)
 ) -> DetailResponseGenre:
