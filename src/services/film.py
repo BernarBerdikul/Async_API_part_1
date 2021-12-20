@@ -15,7 +15,6 @@ from services.utils import create_hash_key, get_hits, get_params_films_to_elasti
 
 
 class FilmService(ServiceMixin):
-
     async def get_all_films(
         self,
         page: int,

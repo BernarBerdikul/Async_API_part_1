@@ -17,7 +17,6 @@ from services.utils import create_hash_key, get_hits
 
 
 class PersonService(ServiceMixin):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.person_films: int = 0
@@ -40,7 +39,7 @@ class PersonService(ServiceMixin):
     async def get_person_films(
         self, film_ids: list[str], page: int, page_size: int
     ) -> Optional[dict]:
-        """ Получаем число фильмов персоны из стейт """
+        """Получаем число фильмов персоны из стейт"""
         state_total: int = await self.get_person_films_count()
         body: dict = {
             "size": page_size,

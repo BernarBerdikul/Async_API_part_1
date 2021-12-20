@@ -25,11 +25,15 @@ class ElasticSearchLoader:
         index = self.index_name
         exist = self.client.indices.exists(index=index)
         if not exist:
-            result = self.client.indices.create(index=index, ignore=400, body=index_schema)
+            result = self.client.indices.create(
+                index=index, ignore=400, body=index_schema
+            )
             if result.get("status") == 200:
                 logger.info(f"\nиндекс {index} создан\t{datetime.now()}\n")
             else:
-                logger.info(f"\nиндекс {index} создан не был, ошибка 400\t{datetime.now()}\n")
+                logger.info(
+                    f"\nиндекс {index} создан не был, ошибка 400\t{datetime.now()}\n"
+                )
         else:
             logger.warning(f"\nиндекс {index} был создан ранее\t{datetime.now()}\n")
 
