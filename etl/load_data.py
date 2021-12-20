@@ -113,6 +113,6 @@ if __name__ == "__main__":
         columns=person_columns,
         state_file="person_data.txt",
         query=person_query,
-        index_name="person",
+        index_name="person_two",
         index_schema=PERSON_INDEX_BODY,
     )

@@ -25,7 +25,7 @@ class JsonFileStorage(BaseStorage):
             with open(self.file_path, "w") as f:
                 json.dump(state, f)
 
-    def retrieve_state(self) -> dict:
+    def retrieve_state(self) -> Optional[dict]:
         if self.file_path:
             logging.info("Не установлен путь до файла.")
         try:
@@ -35,7 +35,6 @@ class JsonFileStorage(BaseStorage):
                     return data
         except FileNotFoundError:
             self.save_state({})
-        return {}
 
 
 class State:
@@ -44,8 +43,7 @@ class State:
         self.state = self.retrieve_state()
 
     def retrieve_state(self) -> dict:
-        data = self.storage.retrieve_state()
-        return data if data else {}
+        return self.storage.retrieve_state() or {}
 
     def set_state(self, key: str, value: Any) -> None:
         """Установить состояние для определённого ключа"""

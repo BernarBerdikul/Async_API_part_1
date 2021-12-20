@@ -23,10 +23,15 @@ class ElasticSearchLoader:
         Создаем индекс для Elasticsearch.
         """
         index = self.index_name
-        if not self.client.indices.exists(index=index):
-            self.client.indices.create(index=index, ignore=400, body=index_schema)
-            logger.warning(f"{datetime.now()}\n\nиндекс {index} создан")
-        logger.warning(f"{datetime.now()}\n\nиндекс {index} был создан ранее")
+        exist = self.client.indices.exists(index=index)
+        if not exist:
+            result = self.client.indices.create(index=index, ignore=400, body=index_schema)
+            if result.get("status") == 200:
+                logger.info(f"\nиндекс {index} создан\t{datetime.now()}\n")
+            else:
+                logger.info(f"\nиндекс {index} создан не был, ошибка 400\t{datetime.now()}\n")
+        else:
+            logger.warning(f"\nиндекс {index} был создан ранее\t{datetime.now()}\n")
 
     @backoff()
     def bulk_data_to_elasticsearch(self) -> None:
