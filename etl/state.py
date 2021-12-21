@@ -1,4 +1,5 @@
 import abc
+import datetime
 import json
 import logging
 from typing import Any, Optional
@@ -22,8 +23,10 @@ class JsonFileStorage(BaseStorage):
 
     def save_state(self, state: dict) -> None:
         if not self.file_path:
-            with open(self.file_path, "w") as f:
-                json.dump(state, f)
+            return
+
+        with open(self.file_path, "w") as f:
+            json.dump(state, f)
 
     def retrieve_state(self) -> Optional[dict]:
         if self.file_path:
@@ -52,4 +55,4 @@ class State:
 
     def get_state(self, key: str) -> Any:
         """Получить состояние по определённому ключу"""
-        return self.state.get(key)
+        return self.state.get(key) or datetime.datetime.min

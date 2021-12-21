@@ -21,7 +21,7 @@ class PostgresLoader:
         """
         Определяем какую дату будем использовать для сравнения при запросе.
         """
-        return self.state_key or datetime(2005, 7, 14, 12, 30)
+        return self.state_key
 
     def loader_from_postgresql(self, query: str) -> list:
         """

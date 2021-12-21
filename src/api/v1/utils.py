@@ -41,11 +41,11 @@ class PersonSearchParam:
     """
 
     def __init__(
-        self, query: Optional[str] = Query(
+        self,
+        query: Optional[str] = Query(
             None,
             title="Запрос",
             description="Осуществляет поиск по имени персоны",
         ),
     ) -> None:
         self.query = query
-

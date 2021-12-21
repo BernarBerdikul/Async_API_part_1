@@ -11,16 +11,12 @@ FILM_WORK_INDEX_BODY: dict = {
                 "analyzer": "ru_en",
                 "fields": {"raw": {"type": "keyword"}},
             },
-            "imdb_rating": {"type": "float"},
             "description": {"type": "text", "analyzer": "ru_en"},
-            "genre": {
-                "type": "nested",
-                "dynamic": "strict",
-                "properties": {
-                    "name": {"type": "text", "analyzer": "ru_en"},
-                    "id": {"type": "keyword"},
-                },
-            },
+            "imdb_rating": {"type": "float"},
+            "genre": {"type": "text", "analyzer": "ru_en"},
+            "director": {"type": "text", "analyzer": "ru_en"},
+            "actors_names": {"type": "text", "analyzer": "ru_en"},
+            "writers_names": {"type": "text", "analyzer": "ru_en"},
             "actors": {
                 "type": "nested",
                 "dynamic": "strict",
