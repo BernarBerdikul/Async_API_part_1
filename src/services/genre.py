@@ -23,7 +23,7 @@ class GenreService(ServiceMixin):
         }
         """ Получаем число фильмов из стейт """
         state_total: int = await self.get_total_count()
-        params: str = f"{state_total}{page}{body}{page_size}"
+        params: str = f"{state_total}{page}{page_size}"
         """ Пытаемся получить данные из кэша """
         instance = await self._get_result_from_cache(
             key=create_hash_key(index=self.index, params=params)
@@ -42,7 +42,7 @@ class GenreService(ServiceMixin):
             ]
             """ Сохраняем жанры в кеш """
             data = orjson.dumps([i.dict() for i in genres])
-            new_param: str = f"{total}{page}{body}{page_size}"
+            new_param: str = f"{total}{page}{page_size}"
             await self._put_data_to_cache(
                 key=create_hash_key(index=self.index, params=new_param), instance=data
             )
