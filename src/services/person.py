@@ -54,6 +54,8 @@ class PersonService(ServiceMixin):
             docs: Optional[dict] = await self.search_in_elastic(
                 body=body, _index="movies"
             )
+            if not docs:
+                return None
             """ Получаем фильмы персоны из ES """
             hits = get_hits(docs=docs, schema=ESFilm)
             """ Получаем число фильмов персоны """
