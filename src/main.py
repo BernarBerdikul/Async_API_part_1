@@ -6,7 +6,7 @@ from fastapi.responses import ORJSONResponse
 
 from api.v1 import film, genre, person
 from core import config
-from db import elastic, redis
+from db import cache, elastic, redis, storage
 
 app = FastAPI(
     title=config.PROJECT_NAME,  # Конфигурируем название проекта
@@ -29,25 +29,29 @@ async def root():
 @app.on_event("startup")
 async def startup():
     """Подключаемся к базам при старте сервера"""
-    redis.redis = await aioredis.create_redis_pool(
-        (config.REDIS_HOST, config.REDIS_PORT), minsize=10, maxsize=20
+    cache.cache = redis.CacheRedis(
+        cache_instance=await aioredis.create_redis_pool(
+            (config.REDIS_HOST, config.REDIS_PORT), minsize=10, maxsize=20
+        )
     )
-    elastic.es = AsyncElasticsearch(
-        hosts=[f"{config.ELASTIC_HOST}:{config.ELASTIC_PORT}"]
+    storage.storage = elastic.StorageElasticsearch(
+        storage_instance=AsyncElasticsearch(
+            hosts=[f"{config.ELASTIC_HOST}:{config.ELASTIC_PORT}"]
+        )
     )
 
 
 @app.on_event("shutdown")
 async def shutdown():
     """Отключаемся от баз при выключении сервера"""
-    await redis.redis.close()
-    await elastic.es.close()
+    await cache.cache.close()
+    await storage.storage.close()
 
 
 # Подключаем роутеры к серверу
-app.include_router(film.router, prefix="/api/v1/film")
-app.include_router(genre.router, prefix="/api/v1/genre")
-app.include_router(person.router, prefix="/api/v1/person")
+app.include_router(router=film.router, prefix="/api/v1/film")
+app.include_router(router=genre.router, prefix="/api/v1/genre")
+app.include_router(router=person.router, prefix="/api/v1/person")
 
 
 if __name__ == "__main__":

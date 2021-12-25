@@ -3,12 +3,10 @@ from http import HTTPStatus
 from typing import Optional
 
 import orjson
-from aioredis import Redis
-from elasticsearch import AsyncElasticsearch
 from fastapi import Depends, HTTPException
 
-from db.elastic import get_elastic
-from db.redis import get_redis
+from db.cache import AbstractCache, get_cache
+from db.storage import AbstractStorage, get_storage
 from models.film import ESFilm, ListResponseFilm
 from models.person import DetailResponsePerson, ElasticPerson
 from services.mixins import ServiceMixin
@@ -155,7 +153,7 @@ class PersonService(ServiceMixin):
 # get_person_service — это провайдер PersonService. Синглтон
 @lru_cache()
 def get_person_service(
-    redis: Redis = Depends(get_redis),
-    elastic: AsyncElasticsearch = Depends(get_elastic),
+    cache: AbstractCache = Depends(get_cache),
+    storage: AbstractStorage = Depends(get_storage),
 ) -> PersonService:
-    return PersonService(redis=redis, elastic=elastic, index="person")
+    return PersonService(cache=cache, storage=storage, index="person")

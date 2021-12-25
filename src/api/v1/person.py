@@ -57,7 +57,7 @@ async def person_details(
 
 
 @router.get(
-    path="/{person_id}/film/",
+    path="/{person_id}/films/",
     response_model=FilmPagination,
     summary="Поиск персоны по его ID и выдача всех его кинопроизведений",
     description="Поиск персоны по его ID и выдача всех его кинопроизведений,"
@@ -65,7 +65,7 @@ async def person_details(
     response_description="Название жанра",
     tags=["person_service"],
 )
-async def person_details(
+async def get_person_films(
     person_id: str,
     person_service: PersonService = Depends(get_person_service),
     page: int = 1,
