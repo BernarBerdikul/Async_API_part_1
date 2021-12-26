@@ -2,12 +2,11 @@ import hashlib
 from typing import Optional
 
 from pydantic import parse_obj_as
-
 from services.mixins import Schemas
 
 
 def get_params_films_to_elastic(
-    page_size: int, page: int, genre: str = None, query: str = None
+        page_size: int = 10, page: int = 1, genre: str = None, query: str = None
 ) -> dict:
     """
     :param page:
@@ -16,9 +15,15 @@ def get_params_films_to_elastic(
     :param query: находит фильмы по полю title
     :return: возвращает правильный body для поиска в Elasticsearch
     """
-    genre_search: list = []
+    films_search = None
     if genre:
-        genre_search.append({"term": {"genre": genre}})
+        films_search = {
+            "fuzzy": {
+                "genre": {
+                    "value": genre
+                }
+            }
+        }
     if query:
         body: dict = {
             "size": page_size,
@@ -26,18 +31,20 @@ def get_params_films_to_elastic(
             "query": {
                 "bool": {
                     "must": {"match": {"title": {"query": query, "fuzziness": "auto"}}},
-                    "filter": genre_search,
+                    "filter": films_search,
                 }
             },
         }
     else:
         body: dict = {
+            "size": page_size,
+            "from": (page - 1) * page_size,
             "query": {
                 "bool": {
                     "must": {
                         "match_all": {},
                     },
-                    "filter": genre_search,
+                    "filter": films_search,
                 }
             }
         }
