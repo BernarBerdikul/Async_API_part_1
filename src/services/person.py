@@ -35,7 +35,7 @@ class PersonService(ServiceMixin):
         return person
 
     async def get_person_films(
-        self, film_ids: list[str], page: int, page_size: int
+        self, film_ids: list[str], page: int, page_size: int, person_id: str
     ) -> Optional[dict]:
         """Получаем число фильмов персоны из стейт"""
         state_total: int = await self.get_person_films_count()
@@ -45,7 +45,7 @@ class PersonService(ServiceMixin):
             "query": {"ids": {"values": film_ids}},
         }
         state_key: str = "person_films"
-        params: str = f"{state_total}{page}{page_size}{film_ids}"
+        params: str = f"{state_total}{page}{page_size}{person_id}"
         """ Пытаемся получить фильмы персоны из кэша """
         instance = await self._get_result_from_cache(
             key=create_hash_key(index=self.index, params=params)
@@ -68,7 +68,7 @@ class PersonService(ServiceMixin):
                 for film in hits
             ]
             data = orjson.dumps([i.dict() for i in person_films])
-            new_param: str = f"{total}{page}{page_size}{film_ids}"
+            new_param: str = f"person_films{total}{page}{page_size}{person_id}"
             await self._put_data_to_cache(
                 key=create_hash_key(index=state_key, params=new_param), instance=data
             )

@@ -2,9 +2,10 @@ from functools import lru_cache
 from typing import Optional
 
 import orjson
+from fastapi import Depends
+
 from db.cache import AbstractCache, get_cache
 from db.storage import AbstractStorage, get_storage
-from fastapi import Depends
 from models.film import ESFilm, ListResponseFilm
 from services.mixins import ServiceMixin
 from services.pagination import get_by_pagination

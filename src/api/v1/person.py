@@ -73,7 +73,7 @@ async def get_person_films(
 ) -> FilmPagination:
     person = await person_service.get_person(person_id=person_id)
     person_films = await person_service.get_person_films(
-        film_ids=person.film_ids, page=page, page_size=page_size
+        film_ids=person.film_ids, page=page, page_size=page_size, person_id=person_id
     )
     if not person_films:
         """Если персона не найдена, отдаём 404 статус"""
