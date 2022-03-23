@@ -52,6 +52,6 @@ class ElasticSearchLoader:
             self.data.append(row)
             self.bulk_data_to_elasticsearch()
             self.data.clear()
-        State(JsonFileStorage(file_path=state_file)).set_state(
-            f"{self.key}", value=f"{datetime.now()}"
+        State(storage=JsonFileStorage(file_path=state_file)).set_state(
+            key=f"{self.key}", value=f"{datetime.now()}"
         )

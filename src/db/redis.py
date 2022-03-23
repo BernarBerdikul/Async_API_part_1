@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, NoReturn
 
 from db.cache import AbstractCache
 
@@ -10,5 +10,5 @@ class CacheRedis(AbstractCache):
     async def set(self, key: str, value: Union[bytes, str], expire: int):
         await self.cache.set(key=key, value=value, expire=expire)
 
-    async def close(self) -> None:
-        await self.cache.close()
+    async def close(self) -> NoReturn:
+        self.cache.close()

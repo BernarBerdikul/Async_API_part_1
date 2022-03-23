@@ -27,6 +27,7 @@ film_work_query: str = """
     fw.title,
     fw.description,
     fw.rating as imdb_rating,
+    fw.roles as permissions,
     array_agg(distinct g.name) as genre,
     array_agg(distinct p.full_name) filter (WHERE pfw.role = 'director') as director,
     array_agg(distinct p.full_name) filter (where pfw.role = 'actor') as actors_names,

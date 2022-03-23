@@ -26,7 +26,7 @@ async def genres_list(
         page=page, page_size=page_size
     )
     if not genres:
-        """Если жанры не найдены, отдаём 404 статус"""
+        # Если жанры не найдены, отдаём 404 статус
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="genres not found")
     return GenrePagination(**genres)
 
@@ -44,6 +44,6 @@ async def genre_details(
 ) -> DetailResponseGenre:
     genre = await genre_service.get_by_id(target_id=genre_id, schema=ElasticGenre)
     if not genre:
-        """Если жанр не найден, отдаём 404 статус"""
+        # Если жанр не найден, отдаём 404 статус
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="genre not found")
     return DetailResponseGenre(uuid=genre.id, name=genre.name)

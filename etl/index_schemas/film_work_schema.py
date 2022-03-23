@@ -13,6 +13,7 @@ FILM_WORK_INDEX_BODY: dict = {
             },
             "description": {"type": "text", "analyzer": "ru_en"},
             "imdb_rating": {"type": "float"},
+            "permissions": {"type": "text", "analyzer": "ru_en"},
             "genre": {"type": "text", "analyzer": "ru_en"},
             "director": {"type": "text", "analyzer": "ru_en"},
             "actors_names": {"type": "text", "analyzer": "ru_en"},

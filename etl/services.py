@@ -9,7 +9,7 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=3):
         @wraps(func)
         def inner(*args, **kwargs):
             t = start_sleep_time
-            count = 0
+            count: int = 0
             while True:
                 try:
                     return func(*args, **kwargs)

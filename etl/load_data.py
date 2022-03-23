@@ -19,6 +19,7 @@ logger = logging.getLogger("LoaderStart")
 def load_from_postgres(pg_conn: _connection, state_file: str, query: str) -> list:
     postgres_loader = PostgresLoader(pg_conn, state_file=state_file)
     data = postgres_loader.loader_from_postgresql(query=query)
+    print(data)
     return data
 
 
@@ -57,6 +58,11 @@ def save_elastic(
     while count != 0:
         if count >= batch:
             for row in data_from_postgres[index : index + batch]:
+                print()
+                print(dict(zip(columns, row)))
+                print()
+                import time
+                # print(time.sleep(1))
                 actions.append(dict(zip(columns, row)))
                 index += 1
             count -= batch
@@ -78,11 +84,13 @@ def save_elastic(
 
 
 if __name__ == "__main__":
+
     film_work_columns: list[str] = [
         "id",
         "title",
         "description",
         "imdb_rating",
+        "permissions",
         "genre",
         "director",
         "actors_names",
